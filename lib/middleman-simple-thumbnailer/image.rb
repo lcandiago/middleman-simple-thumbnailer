@@ -6,7 +6,7 @@ module MiddlemanSimpleThumbnailer
 
     attr_accessor :img_path, :middleman_config, :resize_to
 
-    def initialize(img_path, resize_to, crop, app, options_hash)
+    def initialize(img_path, resize_to, crop=nil, app, options_hash)
       @img_path = img_path
       @resize_to = resize_to
       @crop = crop
