@@ -73,7 +73,7 @@ module MiddlemanSimpleThumbnailer
     def resize!
       unless @already_resized
         if @crop
-          w, h = resize_to.split("x")
+          w, h = resize_to.split("x").map {|size| size.to_f}
           w_original = image[:width].to_f
           h_original = image[:height].to_f
 
@@ -89,8 +89,8 @@ module MiddlemanSimpleThumbnailer
             h_result = h
           end
       
-          w_offset = [ ((original_width - cropped_width) / 2.0).to_i, 0 ].max
-          h_offset = [ ((original_height - cropped_height) / 2.0).to_i, 0 ].max
+          w_offset = [ ((w_result - w) / 2.0).to_i, 0 ].max
+          h_offset = [ ((h_result - h) / 2.0).to_i, 0 ].max
 
           image.resize(op_resize)
           image.gravity(:center)
