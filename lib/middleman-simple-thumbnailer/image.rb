@@ -6,9 +6,10 @@ module MiddlemanSimpleThumbnailer
 
     attr_accessor :img_path, :middleman_config, :resize_to
 
-    def initialize(img_path, resize_to, app, options_hash)
+    def initialize(img_path, resize_to, crop, app, options_hash)
       @img_path = img_path
       @resize_to = resize_to
+      @crop = crop
       @middleman_config = app.config
       @app = app
       @options = options_hash
@@ -71,7 +72,32 @@ module MiddlemanSimpleThumbnailer
 
     def resize!
       unless @already_resized
-        image.resize(resize_to)
+        if @crop
+          w, h = resize_to.split("x")
+          w_original = image[:width].to_f
+          h_original = image[:height].to_f
+
+          op_resize = ''
+
+          if w_original * h < h_original * w
+            op_resize = "#{w.to_i}x"
+            w_result = w
+            h_result = (h_original * w / w_original)
+          else
+            op_resize = "x#{h.to_i}"
+            w_result = (w_original * h / h_original)
+            h_result = h
+          end
+      
+          w_offset = [ ((original_width - cropped_width) / 2.0).to_i, 0 ].max
+          h_offset = [ ((original_height - cropped_height) / 2.0).to_i, 0 ].max
+
+          image.resize(op_resize)
+          image.gravity(:center)
+          image.crop "#{w.to_i}x#{h.to_i}+#{w_offset}+#{h_offset}!"
+        else
+          image.resize(resize_to)
+        end
         @already_resized = true
       end
     end

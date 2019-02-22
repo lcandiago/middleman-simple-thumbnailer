@@ -128,12 +128,12 @@ module MiddlemanSimpleThumbnailer
 
     helpers do
 
-      def resized_image_path(path, resize_to=nil)
+      def resized_image_path(path, resize_to=nil, crop=nil)
         return path unless resize_to
 
         ext = app.extensions[:middleman_simple_thumbnailer]
 
-        image = MiddlemanSimpleThumbnailer::Image.new(path, resize_to, app, ext.options)
+        image = MiddlemanSimpleThumbnailer::Image.new(path, resize_to, crop, app, ext.options)
         if app.development?
           "data:#{image.mime_type};base64,#{image.base64_data}"
         else
@@ -150,7 +150,8 @@ module MiddlemanSimpleThumbnailer
 
       def image_path(path, options={})
         resize_to = options.delete(:resize_to)
-        new_path = resize_to ? resized_image_path(path, resize_to) : path
+        crop = options.delete(:crop)
+        new_path = resize_to ? resized_image_path(path, resize_to, crop) : path
         super(new_path)
       end
     
